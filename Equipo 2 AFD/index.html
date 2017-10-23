@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="lib/angular.min.js"></script>
+    <script type="text/javascript" src="lib/d3.v3.min.js"></script>
+    <script type="text/javascript" src="lib/dagre-d3.min.js"></script>
+    <!-- <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/dagre-d3.min.js"></script> -->
+
+    <script type="text/javascript" src="js/automata.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
+    <!-- <script type="text/javascript" src="script.js"></script> -->
+    <link rel="stylesheet" href="css/automata.css" media="screen" title="no title">
+  </head>
+  <body ng-app="Automatas" ng-controller="automatasController as ctrl">
+    <section class="Integrantes">
+      <h1>Equipo #2 ITNL Lenguajes Automatas</h1>
+      <div>
+        Integrantes del Equipo
+        <br>
+        29 Manuel Alejandro Rodriguez Santoyo 
+        <br>
+        14 Luis Enrique Hernandez Enriquez
+        <br>
+        3 Salvador Eliud Carranza de la Rosa
+        <br>
+        27 Carlos Gabriel Rodriguez Puente
+        <br>
+        David Jimenez A.
+
+      </div>
+    </section>
+    <section class="input-section">
+      <h2>Entradas</h2>
+      <div class="table-container">
+        <table class="automato-form">
+          <tbody>
+            <tr >
+              <td colspan="2">
+                <input type='file' accept='text/plain' onchange='openFile(event)'>
+              </td>
+              <td>
+                <button type="button" name="button" ng-click="getDatosTextarea()">Extraer</button>
+                <!-- <button type="button" name="button" ng-click="processForm()">Procesar</button> -->
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="6">
+                <textarea  id="automata" placeholder="Automata"></textarea>
+              </td>
+            </tr>
+            <tr><td><input type="text" ng-model="automataForm.q" placeholder="Q (Estados)"></td>
+            <td rowspan="6" ><textarea class="h100" ng-model="automataForm.d" placeholder="δ (Función de transición)"></textarea></tr>
+            <tr><td><input type="text" ng-model="automataForm.e" placeholder="Σ (Alfabeto)"></td></tr>
+            <tr><td><input type="text" ng-model="automataForm.s" placeholder="Q0 (Estado inicial)"></td></tr>
+            <tr><td><input type="text" ng-model="automataForm.f" placeholder="F (Estados finales)"></td></tr>
+            <tr></td></tr>
+            <!-- <tr><td>Función de transición<br><textarea ng-change="getDatosTextarea()" ng-model="automataForm.d" id="container_text" placeholder="δ (Función de transición)"></textarea></td></tr> -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Autómata</h2>
+      <div class="cntr">
+        <svg width=960 height=600><g/></svg>
+      </div>
+
+    </section>
+
+    <section>
+      <h2>Tabla de transición</h2>
+      <div class="table-container">
+      <table class="transition-table">
+        <thead>
+          <tr>
+            <th rowspan="2" style=" width: 84px;">Estado</th>
+            <th colspan="{{automata.alfabeto.length}}">Entrada</th>
+          </tr>
+          <tr>
+            <th ng-repeat="letra in automata.alfabeto"> {{letra}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="transicion in automata.funcionTransicion">
+            <td style="text-align:right">{{showTipo(automata.estados[$index])}} {{automata.estados[$index]}}</td>
+            <td ng-repeat="letra in automata.alfabeto">{{transicion[letra].join(',') || 'ε'}}</td>
+            <!-- <td ng-repeat="funcion in transicion">{{transicion.}}</td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </section>
+
+
+
+    <section class="c">
+      <h2>Validación de palabra</h2>
+
+      <input type="text" ng-model="cadena" class="checkerInput" placeholder="Palabra..." ng-change="validar()">
+      <!-- <br><button type="button" ng-click="validar()" class="btnV">Validar</button> -->
+      <br>
+      <span ng-if="totalFinales">Es válida!</span> <span ng-if="!totalFinales">A continuacion se muestran en negritas los caminos validos segun la cadena de entrada</span><br>
+      
+<!--       
+      <span ng-if="totalFinales">Es válida!</span> <span ng-if="!totalFinales">NO es válida!</span><br>
+      Se alcanzaron {{totalFinales}} estados finales 
+    -->
+
+    </section>
+
+  <section>
+    <h2>Caminos:</h2>
+    <div ng-repeat="camino in caminos" ng-class="{'valid':isValidPath(camino), 'invalid':!isValidPath(camino)}">
+      <span >{{$index+1}}.- {{camino}}</span>
+    </div>
+
+    <!-- Grafico del automata no implementado por falta de tiempo -->
+
+    <!-- <pre>
+      {{caminos | json}}
+    </pre> -->
+    <!--<svg width="800" height="600" ng-if="coordenadas">
+        <circle ng-attr-cx="{{coordenadas[$index].x}}" ng-attr-cy="{{coordenadas[$index].y}}" r="40" stroke="black" stroke-width="2" fill="white" ng-repeat="estado in automata.estados" id=e_{{estado}}>  </circle>
+        <text ng-attr-x="{{coordenadas[$index].x}}" ng-attr-y="{{coordenadas[$index].y}}" stroke="#676767" stroke-width="1px" dy=".4em"  dx="-5px" font-size="20" ng-repeat="estado in automata.estados">{{estado}}</text>
+    </svg>-->
+    <!-- <div class="estado" ng-repeat="estado in automata.estados" id=e_{{estado}}>
+      {{estado}}
+    </div> -->
+    <!-- <canvas id="automataPlot" width="800" height="500"></canvas> -->
+  </section>
+
+    <section>
+      <h2>Autómata (JSON):</h2>
+
+      <pre>{{caminos | json:2}}</pre><br><br>
+      <pre>{{automata | json:3}}</pre><br><br>
+      <!-- <pre>{{transiciones | json}}</pre> -->
+    </section>
+
+
+  </body>
+</html>
